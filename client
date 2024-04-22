@@ -28,8 +28,8 @@ def send_packet():
     salt = "Asag@"
     hashed_data = calculate_md5_hash(data_str, salt)
     
-    # Формируем пакет с данными и отправляем на адрес 10.100.200.55
-    packet = IP(dst="10.100.200.55")/UDP()/Raw(load=f"Информация:\n{data_str}\nХэш: {hashed_data}")
+    # Формируем пакет с данными и отправляем на адрес 192.168.0.1
+    packet = IP(dst="192.168.0.1")/UDP()/Raw(load=f"Информация:\n{data_str}\nХэш: {hashed_data}")
     send(packet, verbose=False)
 
 # Отправляем пакет каждые 5 секунд
