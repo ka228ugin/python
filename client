@@ -1,0 +1,38 @@
+from scapy.all import *
+import hashlib
+import time
+
+# Функция для вычисления MD5 хэша с солью
+def calculate_md5_hash(data, salt):
+    data_with_salt = data + salt
+    md5_hash = hashlib.md5(data_with_salt.encode()).hexdigest()
+    return md5_hash
+
+# Функция для отправки пакета с данными
+def send_packet():
+    # Задаем данные для пакета
+    data = {
+        "Имя": "Иван",
+        "Фамилия": "Иванов",
+        "Отчество": "Иванович",
+        "Серия паспорта": "7623",
+        "Номер паспорта": "228335",
+        "Номер заявки на кредит": "7",
+        "Id заявки на кредит": "927",
+        "Хэш": "25"
+    }
+    # Преобразуем данные в строку
+    data_str = '\n'.join([f"{key} - {value}" for key, value in data.items()])
+    
+    # Вычисляем MD5 хэш с солью
+    salt = "Asag@"
+    hashed_data = calculate_md5_hash(data_str, salt)
+    
+    # Формируем пакет с данными и отправляем на адрес 10.100.200.55
+    packet = IP(dst="10.100.200.55")/UDP()/Raw(load=f"Информация:\n{data_str}\nХэш: {hashed_data}")
+    send(packet, verbose=False)
+
+# Отправляем пакет каждые 5 секунд
+while True:
+    send_packet()
+    time.sleep(5)
