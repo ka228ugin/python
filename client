@@ -3,31 +3,24 @@ import hashlib
 import time
 import json
 
-
-# Функция для вычисления MD5 хэша с солью
-def calculate_md5_hash(data, salt):
-    data_with_salt = data + salt
-    md5_hash = hashlib.md5(data_with_salt.encode()).hexdigest()
-    return md5_hash
-
 # Функция для отправки пакета с данными
 def send_packet():
-    # Вычисляем MD5 хэш с солью
-    salt = "Asag@"
+    secret = "Asag@"
 
-    # Задаем данные для пакета
     data = {
         "Name": "Ivan",
         "Surname": "Ivanov",
         "Patronymic": "Ivanovich",
         "Pasport Series": "7623",
         "Pasport Number": "228335",
-        "Id заявки на кредит": "927",
-        "Хэш": calculate_md5_hash('25', salt)
+        "IdAssistnet": "927",
+        "HashValue": hashlib.md5(secret.encode()).hexdigest()
     }
 
     # Преобразуем словарь в JSON строку
     data_str = json.dumps(data)
+
+    #print(data_str)
 
     # Формируем пакет с данными и отправляем на адрес 10.10.3.1
     packet = IP(dst="10.10.3.1")/UDP()/Raw(load=f"Informations: {data_str}".encode())
