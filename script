@@ -1,11 +1,35 @@
 from scapy.all import *
+import json
 
-def process_packet(packet):
-    """
-    Обработка входящего пакета
-    """
-    # Вывод содержимого пакета
-    print(packet.summary())
+def packet_sniffer(packet):
+    if packet.haslayer(IP) and packet.haslayer(Raw):
+        ip_src = packet[IP].src
+        ip_dst = packet[IP].dst
 
-# Захватываем и анализируем сетевой трафик
-sniff(prn=process_packet, store=0)
+        packet_data = {
+            "IP Source": ip_src,
+            "IP Destination": ip_dst
+        }
+
+        if TCP in packet:
+            tcp_sport = packet[TCP].sport
+            tcp_dport = packet[TCP].dport
+            packet_data["TCP Source Port"] = tcp_sport
+            packet_data["TCP Destination Port"] = tcp_dport
+
+        if UDP in packet:
+            udp_sport = packet[UDP].sport
+            udp_dport = packet[UDP].dport
+            packet_data["UDP Source Port"] = udp_sport
+            packet_data["UDP Destination Port"] = udp_dport
+
+        # Получаем содержимое пакета в виде строки
+        raw_data_str = str(packet.getlayer(Raw).load, 'utf-8')
+        packet_data["Raw Data"] = raw_data_str
+
+        # Преобразование данных пакета в JSON
+        packet_json = json.dumps(packet_data, indent=4)
+        print(packet_json)
+
+# Используем функцию sniff для захвата и обработки пакетов на интерфейсе enp0s3
+sniff(iface="enp0s3", prn=packet_sniffer, store=0)
