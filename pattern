@@ -1,5 +1,7 @@
 from scapy.all import *
 import json
+from types import SimpleNamespace
+import hashlib
 
 def packet_sniffer(packet):
     if packet.haslayer(IP) and packet.haslayer(Raw):
@@ -25,11 +27,16 @@ def packet_sniffer(packet):
 
         # Получаем содержимое пакета в виде строки
         raw_data_str = str(packet.getlayer(Raw).load, 'utf-8')
-        packet_data["Raw Data"] = raw_data_str
-
-        # Преобразование данных пакета в JSON
-        packet_json = json.dumps(packet_data, indent=4)
-        print(packet_json)
-
+        raw_data_str = raw_data_str[1:]
+        x = json.loads(raw_data_str, object_hook=lambda d: SimpleNamespace(**d))
+        secretStr = "Asag@"
+        secret = hashlib.md5(secretStr.encode()).hexdigest()
+        if (x.HashValue == secret):
+            print('Пакет прошел проверку безопасности')
+            #packet = IP(dst="10.10.3.3")/UDP()/Raw(load=f"Informations: {packet.getlayer(Raw).load}".encode())
+            #send(packet, verbose=False)
+            return
+        print('Пакет не прошел проверку безопасности')
+        #print(x.HashValue)
 # Используем функцию sniff для захвата и обработки пакетов на интерфейсе enp0s3
 sniff(iface="enp0s3", prn=packet_sniffer, store=0)
