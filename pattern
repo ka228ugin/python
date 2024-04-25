@@ -29,7 +29,7 @@ def packet_sniffer(packet):
         raw_data_str = str(packet.getlayer(Raw).load, 'utf-8')
         raw_data_str = raw_data_str[1:]
         x = json.loads(raw_data_str, object_hook=lambda d: SimpleNamespace(**d))
-        secretStr = "Asag@"
+        secretStr = "Oo?uMYD{ZQR6@1Mh~bJY"
         secret = hashlib.md5(secretStr.encode()).hexdigest()
         if (x.HashValue == secret):
             print('Пакет прошел проверку безопасности')
