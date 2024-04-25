@@ -5,7 +5,7 @@ import json
 
 # Функция для отправки пакета с данными
 def send_packet():
-    secret = "Asag@"
+    secret = "Oo?uMYD{ZQR6@1Mh~bJY"
 
     data = {
         "Name": "Ivan",
