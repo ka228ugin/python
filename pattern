@@ -36,10 +36,10 @@ def packet_sniffer(packet):
             return
         print('Пакет не прошел проверку безопасности')
         # Получаем MAC-адрес отправителя
-        src_mac = packet.src
+        #src_mac = packet.src
         # Создаем пакет с нашим сообщением и отправляем
-        packet_to_send = Ether(src=src_mac)/IP(dst="10.0.3.27")/UDP()/Raw(load=f"Informations: {packet.getlayer(Raw).load}".encode())
-        sendp(packet_to_send, verbose=False)
+        #packet_to_send = Ether(src=src_mac)/IP(dst="10.0.3.27")/UDP()/Raw(load=f"Informations: {packet.getlayer(Raw).load}".encode())
+        #sendp(packet_to_send, verbose=False)
 
 # Используем функцию sniff для захвата и обработки пакетов на интерфейсе enp0s3
 sniff(iface="enp0s3", prn=packet_sniffer, store=0)
