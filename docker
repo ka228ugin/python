@@ -1,0 +1,16 @@
+FROM python:3.8
+
+# Устанавливаем зависимости
+RUN pip install scapy
+
+# Копируем исходный код в контейнер
+COPY . /app
+
+# Устанавливаем рабочую директорию
+WORKDIR /app
+
+# Задаем переменную окружения для имени интерфейса
+ENV INTERFACE_NAME enp0s3
+
+# Запускаем скрипт при запуске контейнера
+CMD ["python", "sniffer.py", "--iface", "$INTERFACE_NAME"]
