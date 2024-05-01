@@ -2,9 +2,9 @@ from scapy.all import *
 import hashlib
 import time
 import json
+import sys
 
-# Функция для отправки пакета с данными
-def send_packet():
+def send_packet(destination_ip):
     secret = "Oo?uMYD{ZQR6@1Mh~bJY"
 
     data = {
@@ -17,17 +17,18 @@ def send_packet():
         "HashValue": hashlib.md5(secret.encode()).hexdigest()
     }
 
-    # Преобразуем словарь в JSON строку
     data_str = json.dumps(data)
 
-    #print(data_str)
-
-    # Формируем пакет с данными и отправляем на адрес 10.10.3.1
-    packet = IP(dst="10.10.3.1")/UDP()/Raw(load=f"Informations: {data_str}".encode())
+    packet = IP(dst=destination_ip)/UDP()/Raw(load=f"Informations: {data_str}".encode())
     send(packet, verbose=False)
 
-# Отправляем пакет каждые 5 секунд
-while True:
-    send_packet()
-    print('packet send')
-    time.sleep(5)
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python script.py <destination_ip>")
+        sys.exit(1)
+
+    destination_ip = sys.argv[1]
+    while True:
+        send_packet(destination_ip)
+        print('packet send')
+        time.sleep(5)
