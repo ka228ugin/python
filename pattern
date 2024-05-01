@@ -26,20 +26,25 @@ def packet_sniffer(packet):
             packet_data["UDP Destination Port"] = udp_dport
 
         # Получаем содержимое пакета в виде строки
-        raw_data_str = str(packet.getlayer(Raw).load, 'utf-8')
-        raw_data_str = raw_data_str[1:]
-        x = json.loads(raw_data_str, object_hook=lambda d: SimpleNamespace(**d))
-        secretStr = "Oo?uMYD{ZQR6@1Mh~bJY"
-        secret = hashlib.md5(secretStr.encode()).hexdigest()
-        if x.HashValue == secret:
-            print('Пакет прошел проверку безопасности')
-            return
-        print('Пакет не прошел проверку безопасности')
+        try:
+            raw_data_str = str(packet.getlayer(Raw).load, 'utf-8')
+            raw_data_str = raw_data_str[1:]
+            x = json.loads(raw_data_str, object_hook=lambda d: SimpleNamespace(**d))
+            secretStr = "Oo?uMYD{ZQR6@1Mh~bJY"
+            secret = hashlib.md5(secretStr.encode()).hexdigest()
+            if x.HashValue == secret:
+                print('Пакет прошел проверку безопасности')
+                return
+            print('Пакет не прошел проверку безопасности')
+        except Exception as e:
+            print("Сломанный пакет", e)
         # Получаем MAC-адрес отправителя
-        #src_mac = packet.src
+        src_mac = packet.src
+        print('Mac-adress нарушителя:')
+        print(src_mac)
         # Создаем пакет с нашим сообщением и отправляем
-        #packet_to_send = Ether(src=src_mac)/IP(dst="10.0.3.27")/UDP()/Raw(load=f"Informations: {packet.getlayer(Raw).load}".encode())
-        #sendp(packet_to_send, verbose=False)
+        packet_to_send = Ether(src=src_mac)/IP(dst="10.0.3.27")/UDP()/Raw(load=f"Informations: {packet.getlayer(Raw).load}".encode())
+        sendp(packet_to_send, verbose=False)
 
 # Используем функцию sniff для захвата и обработки пакетов на интерфейсе enp0s3
 sniff(iface="enp0s3", prn=packet_sniffer, store=0)
